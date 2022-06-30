@@ -11,10 +11,10 @@ func main() {
 
 	app.Use(logger.New())
 
-	app.Mount("/admin", controllers.AdminController)
-	
+	app.Mount("/user/api", controllers.UserController)
+
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello World!")
+		return c.SendString("Hello World!\nWelcome to GO-BMS!")
 	})
 
 	app.Listen(":8080")

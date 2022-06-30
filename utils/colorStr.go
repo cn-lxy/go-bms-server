@@ -4,7 +4,9 @@ import "fmt"
 
 // 打印有颜色的字符
 const (
-	GREEN = 32
+	Green  = 32
+	Yellow = 33
+	Red    = 31
 )
 
 func PrintfColorStr(color int, str string) {
