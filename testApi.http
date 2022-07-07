@@ -1,13 +1,5 @@
-### "/user/api/login" POST
-POST http://localhost:8080/user/api/login
-Content-Type: application/json
 
-{
-  "account": "2019",
-  "password": "123456"
-}
-
-### "/user/api/register" POST
+### 用户注册 "/user/api/register" POST
 POSt http://localhost:8080/user/api/register
 Content-Type: application/json
 
@@ -19,3 +11,50 @@ Content-Type: application/json
   "college": "信息...",
   "birthday": "2019-10-10"
 }
+
+### 用户登录 "/user/api/login" POST
+POST http://localhost:8080/user/api/login
+Content-Type: application/json
+
+{
+  "account": "2019001",
+  "password": "123456"
+}
+
+### 用户更改信息 "/user/api/modify" POST
+POST http://localhost:8080/user/api/modify
+Content-Type: application/json
+  
+{
+  "id": 29,
+  "name": "张三2",
+  "account": "2019001",
+  "password": "123456"
+}
+
+### 用户借阅书籍 "user/api/borrow" POST
+POST http://localhost:8080/user/api/borrow
+Content-Type: application/json
+
+{
+  "userId": 29,
+  "bookIsbn": "9787100017664",
+  "days": 20
+}
+
+### 用户还书 "user/api/back" POST
+POST http://localhost:8080/user/api/back
+Content-Type: application/json
+
+{
+  "id": 4
+}
+
+### 用户查询借阅记录 "user/api/borrowed?id=1" GET
+GET http://localhost:8080/user/api/borrowed?id=1
+
+### 获取用户未还借阅 "user/api/not_back?id=1" GET
+GET http://localhost:8080/user/api/not_back?id=1
+
+### 获取用户已还借阅 "user/api/backed?id=1" GET
+GET http://localhost:8080/user/api/backed?id=1

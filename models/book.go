@@ -115,3 +115,9 @@ func mapToBook(m map[string]any) *Book {
 		Stock:      stock,
 	}
 }
+
+// 删除书籍
+func DeleteBook(isbn string) error {
+	sql := fmt.Sprintf("delete from `books` where isbn = '%s'", isbn)
+	return dbutil.Update(sql)
+}

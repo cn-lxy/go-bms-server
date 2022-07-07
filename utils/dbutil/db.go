@@ -35,12 +35,12 @@ func dbInit() *sql.DB {
 }
 
 // Prepare statement for reading data
-func Query(sqlString string) []map[string]any {
+func Query(sqlString string, args ...any) []map[string]any {
 	db := dbInit()
 	defer db.Close()
 
 	// Execute the query
-	rows, err := db.Query(sqlString)
+	rows, err := db.Query(sqlString, args...)
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
@@ -104,7 +104,7 @@ func Update(sqlString string, params ...any) error {
 	}
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return fmt.Errorf("%s\n", "更新失败!")
+		return fmt.Errorf("%s\n", "update error!")
 	}
 	return nil
 }

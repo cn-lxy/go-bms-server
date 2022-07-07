@@ -49,3 +49,15 @@ func TestGetBooks(t *testing.T) {
 	}
 	utils.PrintfColorStr(utils.Green, "books of len: "+strconv.Itoa(len(books)))
 }
+
+func TestDeleteBook(t *testing.T) {
+	book, err := GetBook(By_BookName, "test书籍")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := DeleteBook(book.Isbn); err != nil {
+		t.Fatal(err)
+	}
+	utils.PrintfColorStr(utils.Green, "删除成功")
+	utils.PrintfColorStr(utils.Green, book.Isbn)
+}
