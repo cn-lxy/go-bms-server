@@ -17,6 +17,14 @@ const (
 	DataBaseName     = "web_bms"
 )
 
+// const (
+// 	DataBaseUser     = "lxy"
+// 	DataBasePassword = "LXY1019XYXYZ"
+// 	DataBaseHost     = "42.192.149.39"
+// 	DataBasePort     = "3306"
+// 	DataBaseName     = "bms"
+// )
+
 func dbInit() *sql.DB {
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8",
 		DataBaseUser,

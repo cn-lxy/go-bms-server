@@ -18,23 +18,17 @@ func TestBookRegister(t *testing.T) {
 		PublicDate: "1991-01-01",
 		Stock:      100,
 	}
-	status := BookRegister(&book)
-	switch status {
-	case Book_RegisterSuccess:
-		utils.PrintfColorStr(utils.Green, "添加书籍成功")
-		break
-	case Book_RegisterError:
-		utils.PrintfColorStr(utils.Red, "添加书籍失败")
-		panic("添加书籍失败")
-	case Book_RegisterExisted:
-		utils.PrintfColorStr(utils.Yellow, "书籍已存在")
-		panic("书籍已存在")
+	bm := BookManger{}
+	if err := bm.InsertBook(&book); err != nil {
+		t.Fatal(err)
 	}
+	utils.PrintfColorStr(utils.Green, "添加书籍成功")
 }
 
 func TestGetBook(t *testing.T) {
 	byName := "test书籍"
-	book, err := GetBook(By_BookName, byName)
+	bm := BookManger{}
+	book, err := bm.GetBook(By_BookName, byName)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,8 +36,12 @@ func TestGetBook(t *testing.T) {
 }
 
 func TestGetBooks(t *testing.T) {
+	bm := BookManger{}
 	typeId := 3
-	books := GetBooks(10, 0, By_BookTypeId, typeId)
+	books, err := bm.GetBooks(10, 0, By_BookTypeId, typeId)
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, book := range books {
 		fmt.Printf("%v\n", book)
 	}
@@ -51,11 +49,13 @@ func TestGetBooks(t *testing.T) {
 }
 
 func TestDeleteBook(t *testing.T) {
-	book, err := GetBook(By_BookName, "test书籍")
+	bm := BookManger{}
+
+	book, err := bm.GetBook(By_BookName, "test书籍")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := DeleteBook(book.Isbn); err != nil {
+	if err := bm.DeleteBook(book.Isbn); err != nil {
 		t.Fatal(err)
 	}
 	utils.PrintfColorStr(utils.Green, "删除成功")

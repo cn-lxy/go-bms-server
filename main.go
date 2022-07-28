@@ -12,6 +12,7 @@ func main() {
 	app.Use(logger.New())
 
 	app.Mount("/user/api", controllers.UserController)
+	app.Mount("/admin/api", controllers.AdminController)
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello World!\nWelcome to GO-BMS!")

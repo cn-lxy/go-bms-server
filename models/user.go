@@ -79,9 +79,11 @@ func (u *User) Modify() error {
 	if u.Id == 0 {
 		return fmt.Errorf("err: %s", "id is nil")
 	}
-	if _, err := verifyAP(u.Account, u.Password); err != nil {
-		return err
-	}
+
+	// if _, err := verifyAP(u.Account, u.Password); err != nil {
+	// 	return err
+	// }
+
 	fieldSlice := make([]string, 0, 10)
 	if u.Account != "" {
 		if verifyAccountExisted(u.Id, u.Account) {
@@ -115,16 +117,20 @@ func (u *User) Delete() error {
 	if u.Id == 0 {
 		return fmt.Errorf("user's id is nil")
 	}
-	if _, err := verifyAP(u.Account, u.Password); err != nil {
-		return err
-	}
+
+	// TAG 验证设置不太合理 => 删除需要提供账号密码不方便管理员模块调用，但是不设置验证会导致用户模块非法调用
+	// FIX: 尝试 在用户登录时设置 `session` 或者 `cookie`
+	// if _, err := verifyAP(u.Account, u.Password); err != nil {
+	// 	return err
+	// }
+
 	sql := "delete from `users` where id = ?"
 	sqlArgs := make([]any, 0)
 	sqlArgs = append(sqlArgs, u.Id)
 	return dbutil.Update(sql, sqlArgs...)
 }
 
-// 验证账号密码
+// TAG 验证账号密码
 func verifyAP(account, password string) (*User, error) {
 	sql := "select * from `users` where account = ? and password = ?"
 	sqlArgs := make([]any, 0)

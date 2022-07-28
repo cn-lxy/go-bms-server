@@ -25,7 +25,7 @@ func TestBackBook(t *testing.T) {
 
 func TestGetUserAllBorrow(t *testing.T) {
 	bm := BorrowManager{}
-	borrows, err := bm.GetUserAllBorrow(1)
+	borrows, err := bm.GetUserAllBorrow(1, 10, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func TestGetBookAllBorrow(t *testing.T) {
 func TestGetSUserNotBackBorrow(t *testing.T) {
 	var userId uint64 = 1
 	bm := BorrowManager{}
-	bs, err := bm.GetUserNotBackBorrow(userId)
+	bs, err := bm.GetUserNotBackBorrow(userId, 10, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestGetSUserNotBackBorrow(t *testing.T) {
 func TestGetSUserBackedBorrow(t *testing.T) {
 	var userId uint64 = 1
 	bm := BorrowManager{}
-	bs, err := bm.GetUserBackedBorrow(userId)
+	bs, err := bm.GetUserBackedBorrow(userId, 10, 0)
 	if err != nil {
 		t.Fatal(err)
 	}

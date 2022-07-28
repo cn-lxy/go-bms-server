@@ -43,15 +43,24 @@ func (b *BorrowManager) BackBook(borrowId uint64) error {
 	return dbutil.Update(sql, sqlArgs...)
 }
 
+// 获取借阅记录，根据时间线
+func (b *BorrowManager) GetBorrows(limit, offset int) ([]BorrowInfo, error) {
+	sql := `select borrow.id, u.id user_id, u.name user_name, b.isbn, b.name book_name, b.author, days, borrow_date, back_date
+	from borrow join users u on u.id = borrow.uid join books b on b.isbn = borrow.bid limit ? offset ?`
+	args := []any{limit, offset}
+	res := dbutil.Query(sql, args...)
+	return mapsToBorrowInfos(res)
+}
+
 // GetUserAllBorrow 获取用户的所有借阅信息
-func (b *BorrowManager) GetUserAllBorrow(uid uint64) ([]BorrowInfo, error) {
+func (b *BorrowManager) GetUserAllBorrow(uid uint64, limit, offset int) ([]BorrowInfo, error) {
 	sql := fmt.Sprintf(
 		`select borrow.id, u.id user_id, u.name user_name, b.isbn, b.name book_name, b.author, days, borrow_date, back_date
 		from %s join users u on u.id = borrow.uid join books b on b.isbn = borrow.bid
-		where uid = ?`,
+		where uid = ? limit ? offset ?`,
 		borrowTableName)
 	sqlArgs := make([]any, 0)
-	sqlArgs = append(sqlArgs, uid)
+	sqlArgs = append(sqlArgs, uid, limit, offset)
 	res := dbutil.Query(sql, sqlArgs...)
 	if len(res) == 0 {
 		return nil, nil
@@ -76,14 +85,14 @@ func (b *BorrowManager) GetBookAllBorrow(bid string) ([]BorrowInfo, error) {
 }
 
 // 获取用户未还借阅
-func (b *BorrowManager) GetUserNotBackBorrow(userId uint64) ([]BorrowInfo, error) {
+func (b *BorrowManager) GetUserNotBackBorrow(userId uint64, limit, offset int) ([]BorrowInfo, error) {
 	sql := fmt.Sprintf(
 		`select borrow.id, u.id user_id, u.name user_name, b.isbn, b.name book_name, b.author, days, borrow_date, back_date
 		from %s join users u on u.id = borrow.uid join books b on b.isbn = borrow.bid
-		where u.id = ? and back_date is null`,
+		where u.id = ? and back_date is null limit ? offset ?`,
 		borrowTableName)
 	sqlArgs := make([]any, 0)
-	sqlArgs = append(sqlArgs, userId)
+	sqlArgs = append(sqlArgs, userId, limit, offset)
 	res := dbutil.Query(sql, sqlArgs...)
 	if len(res) == 0 {
 		return nil, nil
@@ -92,14 +101,14 @@ func (b *BorrowManager) GetUserNotBackBorrow(userId uint64) ([]BorrowInfo, error
 }
 
 // 获取用户已还还借阅
-func (b *BorrowManager) GetUserBackedBorrow(userId uint64) ([]BorrowInfo, error) {
+func (b *BorrowManager) GetUserBackedBorrow(userId uint64, limit, offset int) ([]BorrowInfo, error) {
 	sql := fmt.Sprintf(
 		`select borrow.id, u.id user_id, u.name user_name, b.isbn, b.name book_name, b.author, days, borrow_date, back_date
 		from %s join users u on u.id = borrow.uid join books b on b.isbn = borrow.bid
-		where u.id = ? and back_date is not null`,
+		where u.id = ? and back_date is not null limit ? offset ?`,
 		borrowTableName)
 	sqlArgs := make([]any, 0)
-	sqlArgs = append(sqlArgs, userId)
+	sqlArgs = append(sqlArgs, userId, limit, offset)
 	res := dbutil.Query(sql, sqlArgs...)
 	if len(res) == 0 {
 		return nil, nil
