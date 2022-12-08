@@ -29,7 +29,7 @@ func (a *Admin) verifyAP() error {
 	sqlArgs = append(sqlArgs, a.Account, a.Password)
 	res := dbutil.Query(sql, sqlArgs...)
 	if len(res) == 0 {
-		return fmt.Errorf("account or password error!")
+		return fmt.Errorf("account or password error")
 	}
 	return nil
 }
@@ -42,12 +42,18 @@ func (a *Admin) GetAllUser(limit, offset int) ([]User, error) {
 	return um.getAllUser(limit, offset)
 }
 
+// AddUser 添加新用户
+func (a *Admin) AddUser(user *User) error {
+	um := userManager{}
+	return um.addUser(user)
+}
+
 // GetUserBySex 根据性别获取用户
 // `limit`: 数据条数
 // `offset`: 偏移量
-func (a *Admin) GetUserBySex(sex string, limit, offset int) ([]User, error) {
+func (a *Admin) SearchUser(by int64, key string, limit, offset int) ([]User, error) {
 	um := userManager{}
-	return um.getUserBySex(sex, limit, offset)
+	return um.searchUser(by, key, limit, offset)
 }
 
 // ModifyUser 更新用户信息
@@ -71,7 +77,7 @@ func (a *Admin) DeleteUser(userId uint64) error {
 // bm.GetBooks(limit, offset, By_BookTypeId, value[0])
 func (a *Admin) GetBooks(limit, offset, by int, value ...any) ([]Book, error) {
 	bm := BookManger{}
-	return bm.GetBooks(limit, offset, by, value[0])
+	return bm.GetBooks(limit, offset, by, value...)
 }
 
 // 搜索图书
@@ -100,33 +106,51 @@ func (a *Admin) UpdateBook(b *Book) error {
 }
 
 // 获取借阅记录信息
-func (a *Admin) GetBorrowInfo(limit, offset int) ([]BorrowInfo, error) {
+func (a *Admin) GetBorrowInfo(_type uint64, limit, offset int) ([]BorrowInfo, error) {
 	bm := BorrowManager{}
-	return bm.GetBorrows(limit, offset)
+	return bm.GetBorrows(_type, limit, offset)
 }
 
 // 获取用户借阅信息
-func (a *Admin) GetUserBorrows(userId uint64, limit, offset int) ([]BorrowInfo, error) {
+func (a *Admin) GetUserBorrows(userName string, limit, offset int) ([]BorrowInfo, error) {
 	bm := BorrowManager{}
-	return bm.GetUserAllBorrow(userId, limit, offset)
+	return bm.GetUserAllBorrowByName(userName, limit, offset)
 }
 
 // 获取用户未归还借阅
-func (a *Admin) GetUserNotBackBorrow(userId uint64, limit, offset int) ([]BorrowInfo, error) {
+func (a *Admin) GetUserNotBackBorrow(userName string, limit, offset int) ([]BorrowInfo, error) {
 	bm := BorrowManager{}
-	return bm.GetUserNotBackBorrow(userId, limit, offset)
+	return bm.GetUserNotBackBorrowByName(userName, limit, offset)
 }
 
 // 获取用户已归还借阅
-func (a *Admin) GetUserBackedBorrow(userId uint64, limit, offset int) ([]BorrowInfo, error) {
+func (a *Admin) GetUserBackedBorrow(userName string, limit, offset int) ([]BorrowInfo, error) {
 	bm := BorrowManager{}
-	return bm.GetUserBackedBorrow(userId, limit, offset)
+	return bm.GetUserBackedBorrowByName(userName, limit, offset)
 }
 
-// 获取被借书籍用户
-func (a *Admin) GetBookBorrowedUser(isbn string) ([]BorrowInfo, error) {
+// 获取书籍所有借阅
+func (a *Admin) GetBookBorrowAll(bookName string, limit, offset int) ([]BorrowInfo, error) {
 	bm := BorrowManager{}
-	return bm.GetBookAllBorrow(isbn)
+	return bm.GetBookAllBorrow(bookName, limit, offset)
+}
+
+// 获取书籍未还借阅
+func (a *Admin) GetBookNotBackBorrow(isbn string, limit, offset int) ([]BorrowInfo, error) {
+	bm := BorrowManager{}
+	return bm.GetBookNotBackBorrow(isbn, limit, offset)
+}
+
+// 获取书籍已还借阅
+func (a *Admin) GetBookBackedBorrow(isbn string, limit, offset int) ([]BorrowInfo, error) {
+	bm := BorrowManager{}
+	return bm.GetBookBackedBorrow(isbn, limit, offset)
+}
+
+// 完成借阅
+func (a *Admin) CompleteBorrow(bid uint64) error {
+	bm := BorrowManager{}
+	return bm.BackBook(bid)
 }
 
 // 获取所有用户 切片
@@ -137,10 +161,48 @@ func (um *userManager) getAllUser(limit, offset int) ([]User, error) {
 	return mapsToUsers(res)
 }
 
-// 根据性别获取用户
-func (um *userManager) getUserBySex(sex string, limit, offset int) ([]User, error) {
-	sql := "select * from `user` where sex = ? limit ? offset ?"
-	args := []any{sex, limit, offset}
+// 添加新用户
+func (um *userManager) addUser(user *User) error {
+	// 验证空字段
+	if user.Name == "" || user.Account == "" || user.Password == "" || user.Sex == "" || user.College == "" || user.Birthday == "" {
+		return fmt.Errorf("exist void field")
+	}
+	// 验证账号是否已经被注册
+	sql_1 := fmt.Sprintf("select * from users where account = %s", user.Account)
+	res := dbutil.Query(sql_1)
+	if len(res) != 0 {
+		return fmt.Errorf("this account of `%s` already existed", user.Account)
+	}
+	// 验证通过，插入新用户
+	sql_2 := "insert into users(name, account, password, sex, college, birthday, register) values (?, ?, ?, ?, ?, ?, now())"
+	args := []any{
+		user.Name,
+		user.Account,
+		user.Password,
+		user.Sex,
+		user.College,
+		user.Birthday,
+	}
+	return dbutil.Update(sql_2, args...)
+}
+
+// 搜索用户：by: { 0:姓名, 1:学号, 2: 性别, 3: uid}
+func (um *userManager) searchUser(by int64, key string, limit, offset int) ([]User, error) {
+	var sql string
+	switch by {
+	case 0:
+		sql = "select * from `users` where name = ? limit ? offset ?"
+	case 1:
+		sql = "select * from `users` where account = ? limit ? offset ?"
+	case 2:
+		sql = "select * from `users` where sex = ? limit ? offset ?"
+	case 3:
+		sql = "select * from `users` where id = ? limit ? offset ?"
+	default:
+		return nil, fmt.Errorf("`by` params error")
+	}
+
+	args := []any{key, limit, offset}
 	res := dbutil.Query(sql, args...)
 	return mapsToUsers(res)
 }

@@ -1,6 +1,6 @@
 module github.com/cn-lxy/bms_go
 
-go 1.18
+go 1.19
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/klauspost/compress v1.15.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

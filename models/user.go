@@ -22,25 +22,27 @@ const (
 )
 
 type User struct {
-	Id       uint64 `json:"id"`       // 用户id
-	Name     string `json:"name"`     // 用户名
-	Account  string `json:"account"`  // 账号/学号
-	Password string `json:"password"` // 密码
-	Sex      string `json:"sex"`      // 性别
-	College  string `json:"college"`  // 学院
-	Birthday string `json:"birthday"` // 出生日期
+	Id           uint64 `json:"id"`       // 用户id
+	Name         string `json:"name"`     // 用户名
+	Account      string `json:"account"`  // 账号/学号
+	Password     string `json:"password"` // 密码
+	Sex          string `json:"sex"`      // 性别
+	College      string `json:"college"`  // 学院
+	Birthday     string `json:"birthday"` // 出生日期
+	RegisterDate string `json:"register"` // 注册日期
 }
 
 // 用户注册
 func (u *User) Register() error {
 	// 验证 `User` 结构体是否为空
 	if u.Name == "" || u.Account == "" || u.Password == "" || u.Sex == "" || u.College == "" || u.Birthday == "" {
-		return fmt.Errorf("user struct exist nil.")
+		log.Printf("`User`: %v", u)
+		return fmt.Errorf("user struct exist nil")
 	}
 
 	// 验证账号未被注册
 	if verifyAccountExisted(u.Id, u.Account) {
-		return fmt.Errorf("this account : `%s` has been registered.", u.Account)
+		return fmt.Errorf("this account : `%s` has been registered", u.Account)
 	}
 
 	// 插入新数据
@@ -74,20 +76,31 @@ func (u *User) Login() error {
 	return nil
 }
 
+// 通过 `id` 获取信息
+func (u *User) GetInfoByID() error {
+	sql := "select * from users where id = ?"
+	res := dbutil.Query(sql, u.Id)
+	if len(res) == 0 {
+		return fmt.Errorf("not found")
+	}
+	user, err := mapToUser(res[0])
+	if err != nil {
+		return err
+	}
+	*u = *user
+	return nil
+}
+
 // 更改用户信息：通过id
 func (u *User) Modify() error {
 	if u.Id == 0 {
 		return fmt.Errorf("err: %s", "id is nil")
 	}
 
-	// if _, err := verifyAP(u.Account, u.Password); err != nil {
-	// 	return err
-	// }
-
 	fieldSlice := make([]string, 0, 10)
 	if u.Account != "" {
 		if verifyAccountExisted(u.Id, u.Account) {
-			return fmt.Errorf("after modify `account`: `%s` is existed.", u.Account)
+			return fmt.Errorf("after modify `account`: `%s` is existed", u.Account)
 		}
 		fieldSlice = append(fieldSlice, fmt.Sprintf("account = '%s'", u.Account))
 	}
@@ -148,10 +161,7 @@ func verifyAccountExisted(uid uint64, account string) bool {
 	sqlArgs := make([]any, 0)
 	sqlArgs = append(sqlArgs, account, uid)
 	results := dbutil.Query(sql, sqlArgs...)
-	if len(results) == 0 {
-		return false // 不存在
-	}
-	return true // 存在
+	return len(results) != 0
 }
 
 // 将 map 转换成 User 结构体
@@ -161,13 +171,14 @@ func mapToUser(m map[string]any) (*User, error) {
 		return nil, fmt.Errorf("parse uint err: %s", err)
 	}
 	return &User{
-		Id:       id,
-		Name:     m["name"].(string),
-		Account:  m["account"].(string),
-		Password: m["password"].(string),
-		Sex:      m["sex"].(string),
-		College:  m["college"].(string),
-		Birthday: m["birthday"].(string),
+		Id:           id,
+		Name:         m["name"].(string),
+		Account:      m["account"].(string),
+		Password:     m["password"].(string),
+		Sex:          m["sex"].(string),
+		College:      m["college"].(string),
+		Birthday:     m["birthday"].(string),
+		RegisterDate: m["register"].(string),
 	}, nil
 }
 
@@ -183,17 +194,15 @@ func mapsToUsers(ms []map[string]any) ([]User, error) {
 	return users, nil
 }
 
-// 获取一个用户：通过 `name` | `account``
+// 获取一个用户：通过 `name` | `account“
 func GetUser(byType int, value string) (*User, error) {
 	var sql string
 	var typeField string
 	switch byType {
 	case By_UserName:
 		typeField = "name"
-		break
 	case By_UserAccount:
 		typeField = "account"
-		break
 	}
 	sql = fmt.Sprintf("select * from `users` where %s = '%s'", typeField, value)
 	result := dbutil.Query(sql)
@@ -209,10 +218,8 @@ func GetUsers(limit, offset, by int, value ...string) ([]User, error) {
 	switch by {
 	case By_UserSex:
 		sql = fmt.Sprintf("select * from `users` where sex = '%s' limit %d offset %d", value[0], limit, offset)
-		break
 	case By_UserDefault:
 		sql = fmt.Sprintf("select * from `users` limit %d offset %d", limit, offset)
-		break
 	}
 	results := dbutil.Query(sql)
 	if len(results) == 0 {

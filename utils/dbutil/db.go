@@ -6,27 +6,47 @@ import (
 	"log"
 	"time"
 
+	"github.com/cn-lxy/bms_go/utils/config"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-const (
-	DataBaseUser     = "root"
-	DataBasePassword = "LXY1019XYXYZ"
-	DataBaseHost     = "127.0.0.1"
-	DataBasePort     = "3306"
-	DataBaseName     = "web_bms"
-)
+// windows 配置
+// const (
+// 	DataBaseUser     = "root"
+// 	DataBasePassword = "123456"
+// 	DataBaseHost     = "127.0.0.1"
+// 	DataBasePort     = "3306"
+// 	DataBaseName     = "web_bms"
+// )
 
+// wsl docker 配置
 // const (
 // 	DataBaseUser     = "lxy"
+// 	DataBasePassword = "123456"
+// 	DataBaseHost     = "172.17.0.1" // 宿主相对于docker的地址: 172.17.0.1
+// 	DataBasePort     = "3306"
+// 	DataBaseName     = "web_bms"
+// )
+
+// 腾讯云配置
+// const (
+// 	DataBaseUser     = "lxy" // GOOS=linux GOARCH=arm64 go build xxx.go
 // 	DataBasePassword = "LXY1019XYXYZ"
 // 	DataBaseHost     = "42.192.149.39"
 // 	DataBasePort     = "3306"
 // 	DataBaseName     = "bms"
 // )
 
+var (
+	DataBaseUser     = config.Cfg.Database.UserName
+	DataBasePassword = config.Cfg.Database.Password
+	DataBaseHost     = config.Cfg.Database.Host
+	DataBasePort     = config.Cfg.Database.Port
+	DataBaseName     = config.Cfg.Database.Name
+)
+
 func dbInit() *sql.DB {
-	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8",
+	connString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8",
 		DataBaseUser,
 		DataBasePassword,
 		DataBaseHost,
@@ -112,7 +132,7 @@ func Update(sqlString string, params ...any) error {
 	}
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return fmt.Errorf("%s\n", "update error!")
+		return fmt.Errorf("%s", "update error")
 	}
 	return nil
 }

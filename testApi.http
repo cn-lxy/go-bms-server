@@ -62,7 +62,7 @@ GET http://localhost:8080/user/api/backed?id=1&limit=10&offset=0
 
 
 ### 管理员登录 "/admin/api/login" POST
-POST http://localhost:8080/admin/api/login
+POST http://localhost:8080/api/admin/login
 Content-Type: application/json
 
 {
@@ -76,6 +76,9 @@ GET http://localhost:8080/admin/api/login
 
 ### 获取所有用户 "/admin/api/manager/user/getall?limit=10&offset=0" GET
 GET http://localhost:8080/admin/api/manager/user/getall?limit=10&offset=0
+
+### 搜索用户 "/api/admin/manager/user/search?by=0&key=小明"
+GET http://localhost:8080/api/admin/manager/user/search?by=3&key=1&limit=1&offset=0 HTTP/1.1
 
 ### 更新用户信息 "/admin/api/manager/user/update" POST
 POST http://localhost:8080/admin/api/manager/user/update
@@ -96,12 +99,12 @@ GET http://localhost:8080/admin/api/manager/book/getbooks?by=1&typeid=3&limit=10
 
 ### 搜索图书 "/admin/api/manager/book/search?by={0,1}&value={isbn,name}" GET
 ### isbn: 9787010009223
-GET http://localhost:8080/admin/api/manager/book/search?by=0&value=9787010009223
+GET http://localhost:8080/api/admin/manager/book/search?by=0&value=9787010009223
 ### name: 围城
 GET http://localhost:8080/admin/api/manager/book/search?by=1&value=%E5%9B%B4%E5%9F%8E
 
 ### 新建图书 "/admin/api/manager/book" POST
-POST http://localhost:8080/admin/api/manager/book
+POST http://localhost:8080/api/admin/manager/book
 Content-Type: application/json
 
 {
@@ -115,7 +118,7 @@ Content-Type: application/json
 }
 
 ### 删除书籍 "/admin/api/manager/book/delete?isbn=xx" GET
-GET http://localhost:8080/admin/api/manager/book/delete?isbn=9787100017666
+GET http://localhost:8080/admin/api/manager/book/delete?isbn=1
 
 ### 更新书籍 "/admin/api/manager/book/update" POST
 POST http://localhost:8080/admin/api/manager/book/update
