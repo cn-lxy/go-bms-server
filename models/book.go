@@ -35,7 +35,7 @@ func (b BookManger) InsertBook(book *Book) error {
 	querySql := fmt.Sprintf("select name from `books` where isbn = '%s'", book.Isbn)
 	results := dbutil.Query(querySql)
 	if len(results) != 0 {
-		return fmt.Errorf("[insert book]: book is existed!\n")
+		return fmt.Errorf("[insert book]: book is existed")
 	}
 
 	insertSql := fmt.Sprintf(
@@ -60,10 +60,8 @@ func (b BookManger) GetBook(by int, value string) (*Book, error) {
 	switch by {
 	case By_BookName:
 		whereName = "name"
-		break
 	case By_BookISBN:
 		whereName = "isbn"
-		break
 	}
 	selectSql := fmt.Sprintf("select * from `books` where %s = '%s'", whereName, value)
 	results := dbutil.Query(selectSql)
@@ -80,10 +78,8 @@ func (b BookManger) GetBooks(limit, offset int, by int, value ...any) ([]Book, e
 	switch by {
 	case By_BookTypeId:
 		sql = fmt.Sprintf("select * from `books` where type_id = %d limit %d offset %d", value[0].(int), limit, offset)
-		break
 	case By_BookDefault:
 		sql = fmt.Sprintf("select * from `books` limit %d offset %d", limit, offset)
-		break
 	}
 	results := dbutil.Query(sql)
 	return mapsToBooks(results)
@@ -133,7 +129,7 @@ func (b BookManger) UpdateBook(book *Book) error {
 	// sql += " where isbn = ? "
 
 	if book.Isbn == "" {
-		return fmt.Errorf("[update book]: isbn is nil\n")
+		return fmt.Errorf("[update book]: isbn is nil")
 	}
 	sql := "update books set name = ?, author = ?, type_id = ?, public = ?, public_date = ?, stock = ? where isbn = ?"
 	args := []any{book.Name, book.Author, book.TypeId, book.Public, book.PublicDate, book.Stock, book.Isbn}
