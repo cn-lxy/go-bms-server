@@ -16,7 +16,7 @@ func TestDbQuery(t *testing.T) {
 		fmt.Printf("%d: %#v\n", i, d)
 	}
 
-	// mutilative args test
+	// mutipletive args test
 	sql2 := "select * from users where id = ? and sex = ?"
 	res2 := Query(sql2, 1, "男")
 	if len(res2) == 0 {

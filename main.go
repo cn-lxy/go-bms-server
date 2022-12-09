@@ -34,5 +34,8 @@ func main() {
 
 	utils.PrintfColorStr(utils.Green, "App: "+config.Cfg.App.Name+" Ready!")
 
-	app.Listen(fmt.Sprintf(":%d", config.Cfg.Server.Port))
+	err := app.Listen(fmt.Sprintf(":%d", config.Cfg.Server.Port))
+	if err != nil {
+		return
+	}
 }

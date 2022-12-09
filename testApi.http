@@ -1,6 +1,6 @@
 
 ### 用户注册 "/user/api/register" POST
-POSt http://localhost:8080/user/api/register
+POST http://localhost:8080/user/api/register
 Content-Type: application/json
 
 {
