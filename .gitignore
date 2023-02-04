@@ -1,6 +1,6 @@
-./main
-./main.exe
-./go_bms
-./go_bms.exe
-./Note.md
-./testApi.http
+main
+main.exe
+go_bms
+go_bms.exe
+Note.md
+testApi.http
