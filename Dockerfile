@@ -1,5 +1,5 @@
 FROM golang:alpine
-WORKDIR /home/lxy/GoProject/book_manager_system
+WORKDIR /code
 ADD . ./
 ENV GO111MODULE=on
 ENV GOPROXY="https://goproxy.io"

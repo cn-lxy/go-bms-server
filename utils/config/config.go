@@ -57,6 +57,6 @@ const cfgPathTOML string = "./config.toml"
 var Cfg Config
 
 func init() {
-	toml.DecodeFile(cfgPathTOML, &Cfg)
+	_, _ = toml.DecodeFile(cfgPathTOML, &Cfg)
 	log.Println("Config Init Over!")
 }
