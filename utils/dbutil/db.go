@@ -45,6 +45,11 @@ var (
 	DataBaseName     = config.Cfg.Database.Name
 )
 
+func init() {
+	log.Println("check db server")
+	checkDbServer()
+}
+
 func dbInit() *sql.DB {
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8",
 		DataBaseUser,
@@ -60,6 +65,16 @@ func dbInit() *sql.DB {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 	return db
+}
+
+// 检查 Database 服务是否开启
+func checkDbServer() error {
+	sql := "SELECT VERSION();"
+	res := Query(sql)
+	if len(res) == 0 {
+		return fmt.Errorf("mysql DataBase Server not start")
+	}
+	return nil
 }
 
 // Prepare statement for reading data
