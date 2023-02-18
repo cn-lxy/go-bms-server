@@ -361,6 +361,7 @@ func adminGetBooksHandler(c *fiber.Ctx) error {
 			})
 		}
 		books, err = admin.GetBooks(limit, offset, by, typeId)
+		_ = err
 	} else {
 		books, err = admin.GetBooks(limit, offset, by)
 	}
@@ -704,6 +705,7 @@ func adminGetBorrowOfBookHandler(c *fiber.Ctx) error {
 
 	admin := models.Admin{}
 	bis := []models.BorrowInfo{}
+	_ = bis // fixed: 变量未使用警告
 	switch _type {
 	case "1":
 		bis, err = admin.GetBookBorrowAll(bookName, limit, offset)
