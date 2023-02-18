@@ -36,8 +36,8 @@ func userControllerInit() {
 
 func adminControllerInit() {
 	AdminController = fiber.New()
-	AdminController.Post("/login", adminLoginHandler_POST)
-	AdminController.Get("/login", adminLoginHandler_GET)
+	AdminController.Post("/login", adminLoginHandlerPOST)
+	AdminController.Get("/login", adminLoginHandlerGET)
 	AdminController.Get("/manager/users", adminGetAllUser)
 	AdminController.Get("/manager/user/search", adminSearchUserHandler)
 	AdminController.Post("/manager/user", adminAddUserHandler)

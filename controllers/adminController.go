@@ -11,7 +11,7 @@ import (
 
 //! code: { -1: 身份验证失败, -2: 客户端请求错误, -3: 服务器错误, 0: 未知错误, 1: 请求成功 }
 
-func verifyLogin_middle(c *fiber.Ctx) error {
+func verifyLoginMiddle(c *fiber.Ctx) error {
 	session, err := store.Get(c)
 	if err != nil {
 		return fmt.Errorf("%s", "get session field!")
@@ -28,7 +28,7 @@ func verifyLogin_middle(c *fiber.Ctx) error {
 }
 
 // 管理员登录 ["POST", "/admin/api/login"] ["tested"]
-func adminLoginHandler_POST(c *fiber.Ctx) error {
+func adminLoginHandlerPOST(c *fiber.Ctx) error {
 	session, err := store.Get(c)
 	if err != nil {
 		c.SendStatus(500)
@@ -75,8 +75,8 @@ func adminLoginHandler_POST(c *fiber.Ctx) error {
 }
 
 // 管理员登录 ["GET", "/admin/api/login"] ["tested"]
-func adminLoginHandler_GET(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+func adminLoginHandlerGET(c *fiber.Ctx) error {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -92,7 +92,7 @@ func adminLoginHandler_GET(c *fiber.Ctx) error {
 
 // 获取所有用户 ["GET", "/api/admin/manager/users?limit=xx&offset=xx"] ["tested"]
 func adminGetAllUser(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -144,7 +144,7 @@ func adminGetAllUser(c *fiber.Ctx) error {
 // 搜索用户 ["GET", "/api/admin/manager/user/search?by=xx&key=xx"]
 // by: { 0:姓名, 1:学号, 2: 性别, 3: uid }
 func adminSearchUserHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -204,7 +204,7 @@ func adminSearchUserHandler(c *fiber.Ctx) error {
 
 // 添加用户 ["POST", "/api/admin/manager/user"]
 func adminAddUserHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -237,7 +237,7 @@ func adminAddUserHandler(c *fiber.Ctx) error {
 
 // 更新用户信息 ["POST", "/api/admin/manager/user/update"] ["not test"]
 func adminUpdateUserHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -271,7 +271,7 @@ func adminUpdateUserHandler(c *fiber.Ctx) error {
 
 // 根据user_id删除用户 ["GET", "/api/admin/manager/user/delete?id=xx"] ["tested"]
 func adminDeleteUserHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -314,7 +314,7 @@ func adminDeleteUserHandler(c *fiber.Ctx) error {
 // 获取多本图书 ["GET", "/api/admin/manager/books?limit=xx&offset=xx&by={0, 1}&typeid=xx"]
 // 0: default, 1: typeId
 func adminGetBooksHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -384,7 +384,7 @@ func adminGetBooksHandler(c *fiber.Ctx) error {
 // 搜索图书 ["GET", "/api/admin/manager/book/search?by=xx&value=xx"]
 // `by: int` => By_BookISBN -> 0 | By_BookName -> 1
 func adminSearchBookHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -433,7 +433,7 @@ func adminSearchBookHandler(c *fiber.Ctx) error {
 
 // 新建图书 handler ["POST", "/api/admin/manager/book"]
 func adminInsertBookHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -468,7 +468,7 @@ func adminInsertBookHandler(c *fiber.Ctx) error {
 
 // 删除书籍 ["GET", "/api/admin/manager/book/delete?isbn=xx"]
 func adminDeleteBookHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -503,7 +503,7 @@ func adminDeleteBookHandler(c *fiber.Ctx) error {
 
 // 更新书籍 ["POST", "/api/admin/manager/book/update"]
 func adminUpdateBookHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -542,7 +542,7 @@ func adminUpdateBookHandler(c *fiber.Ctx) error {
 // 获取借阅记录信息 ["GET", "/api/admin/manager/borrow?type=xx&limit=xx&&offset=xx"] ["not test"]
 // query param: `type` => {1: 全部，2: 未归还，3: 已归还}
 func adminGetBorrowInfoHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -601,7 +601,7 @@ func adminGetBorrowInfoHandler(c *fiber.Ctx) error {
 // 获取用户借阅信息 ["GET", "/api/admin/manager/borrow/u/?name=xx&type=xx&limit=xx&offset=xx"]
 // type = {"1":"全部借阅", "2":"未还借阅", "3":"已还借阅"}
 func adminGetBorrowOfUserHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -669,7 +669,7 @@ func adminGetBorrowOfUserHandler(c *fiber.Ctx) error {
 // 获取被借书籍用户 ["GET", "/api/admin/manager/borrow/b?name=xx&type=xx&limit=xx&offset=xx"]
 // type = {"1":"全部借阅", "2":"未还借阅", "3":"已还借阅"}
 func adminGetBorrowOfBookHandler(c *fiber.Ctx) error {
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
@@ -736,7 +736,7 @@ func adminGetBorrowOfBookHandler(c *fiber.Ctx) error {
 // query param: `bid` => borrow id
 func adminCompleteBorrowHandler(c *fiber.Ctx) error {
 	// 身份验证
-	if err := verifyLogin_middle(c); err != nil {
+	if err := verifyLoginMiddle(c); err != nil {
 		log.Println(err.Error())
 		return c.JSON(fiber.Map{
 			"msg":  err.Error(),
